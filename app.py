@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import base64
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -14,11 +15,25 @@ THRESHOLD_CANDIDATES = (2.5, 3.0, 3.5, 4.0)
 
 
 def apply_theme() -> None:
+    bg_path = Path(__file__).resolve().parent.parent / "image.png"
+    if bg_path.is_file():
+        bg_b64 = base64.b64encode(bg_path.read_bytes()).decode("ascii")
+        app_bg_css = (
+            "background-image: linear-gradient(rgba(11,18,32,0.62), rgba(16,26,43,0.68)), "
+            f"url('data:image/png;base64,{bg_b64}');"
+            "background-size: cover;"
+            "background-position: center;"
+            "background-repeat: no-repeat;"
+            "background-attachment: fixed;"
+        )
+    else:
+        app_bg_css = "background: linear-gradient(180deg, #0b1220 0%, #101a2b 100%);"
+
     st.markdown(
         """
         <style>
         .stApp {
-            background: linear-gradient(180deg, #0b1220 0%, #101a2b 100%);
+            __APP_BG_CSS__
             color: #e7eef9;
         }
         .hero {
@@ -112,7 +127,7 @@ def apply_theme() -> None:
             line-height: 1.25;
         }
         </style>
-        """,
+        """.replace("__APP_BG_CSS__", app_bg_css),
         unsafe_allow_html=True,
     )
 
